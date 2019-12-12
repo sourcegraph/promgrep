@@ -45,3 +45,14 @@ promgrep some:partial:metric:name
 
 and it will list all metric declarations that contain this partial name. 
 
+### Output
+
+The code locations in the `promgrep` output are of the form
+
+```
+relative_path_to_file:line_number
+```
+
+and should be clickable in Emacs buffers, Goland terminals and other tools
+that parse format and make it navigable. Clicking on an output line should get you to
+the place in code where the declaration is.
