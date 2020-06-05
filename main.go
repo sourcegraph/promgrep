@@ -171,6 +171,12 @@ var constructors = map[string]metricKind {
 	"prometheus.NewHistogram": histogram,
 	"prometheus.NewGaugeVec": gauge,
 	"prometheus.NewGauge": gauge,
+	"promauto.NewCounterVec": counter,
+	"promauto.NewCounter": counter,
+	"promauto.NewHistogramVec": histogram,
+	"promauto.NewHistogram": histogram,
+	"promauto.NewGaugeVec": gauge,
+	"promauto.NewGauge": gauge,
 }
 
 func inspect(fset *token.FileSet, node ast.Node, mr matcher, accum *byScore) error {
