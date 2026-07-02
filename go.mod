@@ -1,3 +1,3 @@
 module github.com/sourcegraph/promgrep
 
-go 1.13
+go 1.26.4
