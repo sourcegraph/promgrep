@@ -22,9 +22,12 @@ const (
 
 func (kind metricKind) String() string {
 	switch kind {
-	case gauge: return "Gauge"
-	case histogram: return "Histogram"
-	case counter: return "Counter"
+	case gauge:
+		return "Gauge"
+	case histogram:
+		return "Histogram"
+	case counter:
+		return "Counter"
 	}
 	return ""
 }
@@ -34,11 +37,11 @@ type promOpts map[string]string
 type matchResult struct {
 	// score is in range [0..100], bigger is better match, 100 is perfect match
 	score int
-	path string
-	val string
-	help string
-	line int
-	kind metricKind
+	path  string
+	val   string
+	help  string
+	line  int
+	kind  metricKind
 }
 
 type byScore []matchResult
@@ -59,7 +62,7 @@ func (ma *matchAny) Match(opts promOpts, pos token.Position) (matchResult, bool)
 		path:  pos.Filename,
 		line:  pos.Line,
 		help:  opts["Help"],
-		val: qualifiedMetricName(opts),
+		val:   qualifiedMetricName(opts),
 	}, true
 }
 
@@ -69,13 +72,13 @@ type matchName struct {
 
 func (mn *matchName) Match(opts promOpts, pos token.Position) (matchResult, bool) {
 	if opts["Namespace"] != "" && opts["Subsystem"] == "" &&
-		len(mn.name) > (len(opts["Namespace"]) + len(opts["Name"])) {
+		len(mn.name) > (len(opts["Namespace"])+len(opts["Name"])) {
 		if !strings.HasPrefix(mn.name, opts["Namespace"]) || !strings.HasSuffix(mn.name, opts["Name"]) {
 			return matchResult{}, false
 		}
 
-		delta, denum := len(mn.name) - len(opts["Namespace"]) - len(opts["Name"]), len(mn.name)
-		score := 100 - delta * 100 / denum
+		delta, denum := len(mn.name)-len(opts["Namespace"])-len(opts["Name"]), len(mn.name)
+		score := 100 - delta*100/denum
 		return matchResult{
 			score: score,
 			path:  pos.Filename,
@@ -86,16 +89,16 @@ func (mn *matchName) Match(opts promOpts, pos token.Position) (matchResult, bool
 	}
 	qmn := qualifiedMetricName(opts)
 
-	if !strings.Contains(mn.name, qmn) && !strings.Contains(qmn, mn.name){
+	if !strings.Contains(mn.name, qmn) && !strings.Contains(qmn, mn.name) {
 		return matchResult{}, false
 	}
 
-	delta, denum := len(mn.name) - len(qmn), len(mn.name)
+	delta, denum := len(mn.name)-len(qmn), len(mn.name)
 	if delta < 0 {
 		delta, denum = -delta, len(qmn)
 	}
 
-	score := 100 - delta * 100 / denum
+	score := 100 - delta*100/denum
 	return matchResult{
 		score: score,
 		path:  pos.Filename,
@@ -124,7 +127,7 @@ func unquote(val string) string {
 	if n < 2 || val[0] != '"' || val[n-1] != '"' {
 		return val
 	}
-	return val[1:n-1]
+	return val[1 : n-1]
 }
 
 func qualifiedMetricName(opts promOpts) string {
@@ -164,19 +167,19 @@ func getOpts(c *ast.CallExpr) promOpts {
 	return opts
 }
 
-var constructors = map[string]metricKind {
-	"prometheus.NewCounterVec": counter,
-	"prometheus.NewCounter": counter,
+var constructors = map[string]metricKind{
+	"prometheus.NewCounterVec":   counter,
+	"prometheus.NewCounter":      counter,
 	"prometheus.NewHistogramVec": histogram,
-	"prometheus.NewHistogram": histogram,
-	"prometheus.NewGaugeVec": gauge,
-	"prometheus.NewGauge": gauge,
-	"promauto.NewCounterVec": counter,
-	"promauto.NewCounter": counter,
-	"promauto.NewHistogramVec": histogram,
-	"promauto.NewHistogram": histogram,
-	"promauto.NewGaugeVec": gauge,
-	"promauto.NewGauge": gauge,
+	"prometheus.NewHistogram":    histogram,
+	"prometheus.NewGaugeVec":     gauge,
+	"prometheus.NewGauge":        gauge,
+	"promauto.NewCounterVec":     counter,
+	"promauto.NewCounter":        counter,
+	"promauto.NewHistogramVec":   histogram,
+	"promauto.NewHistogram":      histogram,
+	"promauto.NewGaugeVec":       gauge,
+	"promauto.NewGauge":          gauge,
 }
 
 func inspect(fset *token.FileSet, node ast.Node, mr matcher, accum *byScore) error {
@@ -249,7 +252,7 @@ Usage:
 
 	mr = &matchAny{}
 	if len(os.Args) == 2 {
-		mr = &matchName{name:os.Args[1]}
+		mr = &matchName{name: os.Args[1]}
 	}
 
 	err := filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
